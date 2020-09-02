@@ -8,6 +8,7 @@ import helmet from 'helmet'
 import Template from './../template'
 import userRoutes from './routes/user.routes'
 import authRoutes from './routes/auth.routes'
+import postRoutes from './routes/post.routes'
 
 // modules for server side rendering
 import React from 'react'
@@ -29,8 +30,8 @@ const app = express()
 devBundle.compile(app)
 
 // parse body params and attache them to req.body
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(compress())
 // secure apps by setting various HTTP headers
@@ -43,6 +44,7 @@ app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
 // mount routes
 app.use('/', userRoutes)
 app.use('/', authRoutes)
+app.use('/', postRoutes)
 
 app.get('*', (req, res) => {
   const sheets = new ServerStyleSheets()

@@ -1,12 +1,12 @@
-const create = async (user) => {
+const create = async (params, credentials, post) => {
   try {
-    let response = await fetch("/api/users/", {
+    let response = await fetch("/api/posts/new/" + params.userId, {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json",
+        Authorization: "Bearer " + credentials.t,
       },
-      body: JSON.stringify(user),
+      body: post,
     });
     return await response.json();
   } catch (err) {
@@ -14,23 +14,10 @@ const create = async (user) => {
   }
 };
 
-const list = async (signal) => {
+const listByUser = async (params, credentials) => {
   try {
-    let response = await fetch("/api/users/", {
+    let response = await fetch("/api/posts/by/" + params.userId, {
       method: "GET",
-      signal: signal,
-    });
-    return await response.json();
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-const read = async (params, credentials, signal) => {
-  try {
-    let response = await fetch("/api/users/" + params.userId, {
-      method: "GET",
-      signal: signal,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -43,15 +30,16 @@ const read = async (params, credentials, signal) => {
   }
 };
 
-const update = async (params, credentials, user) => {
+const listNewsFeed = async (params, credentials, signal) => {
   try {
-    let response = await fetch("/api/users/" + params.userId, {
-      method: "PUT",
+    let response = await fetch("/api/posts/feed/" + params.userId, {
+      method: "GET",
+      signal: signal,
       headers: {
         Accept: "application/json",
+        "Content-Type": "application/json",
         Authorization: "Bearer " + credentials.t,
       },
-      body: user,
     });
     return await response.json();
   } catch (err) {
@@ -61,7 +49,7 @@ const update = async (params, credentials, user) => {
 
 const remove = async (params, credentials) => {
   try {
-    let response = await fetch("/api/users/" + params.userId, {
+    let response = await fetch("/api/posts/" + params.postId, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
@@ -75,16 +63,16 @@ const remove = async (params, credentials) => {
   }
 };
 
-const follow = async (params, credentials, followId) => {
+const like = async (params, credentials, postId) => {
   try {
-    let response = await fetch("/api/users/follow/", {
+    let response = await fetch("/api/posts/like/", {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
         Authorization: "Bearer " + credentials.t,
       },
-      body: JSON.stringify({ userId: params.userId, followId: followId }),
+      body: JSON.stringify({ userId: params.userId, postId: postId }),
     });
     return await response.json();
   } catch (err) {
@@ -92,16 +80,16 @@ const follow = async (params, credentials, followId) => {
   }
 };
 
-const unfollow = async (params, credentials, unfollowId) => {
+const unlike = async (params, credentials, postId) => {
   try {
-    let response = await fetch("/api/users/unfollow/", {
+    let response = await fetch("/api/posts/unlike/", {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
         Authorization: "Bearer " + credentials.t,
       },
-      body: JSON.stringify({ userId: params.userId, unfollowId: unfollowId }),
+      body: JSON.stringify({ userId: params.userId, postId: postId }),
     });
     return await response.json();
   } catch (err) {
@@ -109,16 +97,20 @@ const unfollow = async (params, credentials, unfollowId) => {
   }
 };
 
-const findPeople = async (params, credentials, signal) => {
+const comment = async (params, credentials, postId, comment) => {
   try {
-    let response = await fetch("/api/users/findpeople/" + params.userId, {
-      method: "GET",
-      signal: signal,
+    let response = await fetch("/api/posts/comment/", {
+      method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
         Authorization: "Bearer " + credentials.t,
       },
+      body: JSON.stringify({
+        userId: params.userId,
+        postId: postId,
+        comment: comment,
+      }),
     });
     return await response.json();
   } catch (err) {
@@ -126,4 +118,25 @@ const findPeople = async (params, credentials, signal) => {
   }
 };
 
-export { create, list, read, update, remove, follow, unfollow, findPeople };
+const uncomment = async (params, credentials, postId, comment) => {
+  try {
+    let response = await fetch("/api/posts/uncomment/", {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + credentials.t,
+      },
+      body: JSON.stringify({
+        userId: params.userId,
+        postId: postId,
+        comment: comment,
+      }),
+    });
+    return await response.json();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export { create, listByUser, listNewsFeed, remove, like, unlike, comment, uncomment };
